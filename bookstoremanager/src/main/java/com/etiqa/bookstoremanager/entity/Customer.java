@@ -7,8 +7,10 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUST_SEQ_GEN")
+    @SequenceGenerator(name = "CUST_SEQ_GEN", sequenceName = "customer_seq", allocationSize = 1)
     private Long id;
+
     private String firstName;
     private String lastName;
 
@@ -16,6 +18,7 @@ public class Customer {
     private Email email;
 
     @ElementCollection
+    @Column(name = "FAMILY_MEMBER_NAME")
     private List<String> familyMembers;
 
     public Long getId() {
@@ -61,7 +64,9 @@ public class Customer {
 
 @Embeddable
 class Email {
+    @Column(name = "OFFICE_EMAIL")
     private String office;
+    @Column(name = "PERSONAL_EMAIL")
     private String personal;
 
     public String getOffice() {

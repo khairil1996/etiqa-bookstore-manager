@@ -1,12 +1,18 @@
 package com.etiqa.bookstoremanager.controller;
 
+import com.etiqa.bookstoremanager.entity.Customer;
 import com.etiqa.bookstoremanager.entity.Product;
+import com.etiqa.bookstoremanager.response.DeleteResponse;
 import com.etiqa.bookstoremanager.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -16,19 +22,20 @@ public class ProductController {
     private ProductService productService;
 
     // POST - Create a new product
-    @PostMapping
+    @PostMapping("/create/product")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         return ResponseEntity.ok(productService.saveOrUpdateProduct(product));
     }
 
     // GET - Get all products
-    @GetMapping
+    @Operation(summary = "Get all books", description = "Get all books in the store")
+    @GetMapping("/get/all/products")
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     // GET - Get a single product by ID
-    @GetMapping("/{id}")
+    @GetMapping("/get/product/by/id/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
                 .map(ResponseEntity::ok)
@@ -36,17 +43,28 @@ public class ProductController {
     }
 
     // PUT - Update a product
-    @PutMapping("/{id}")
+    @PutMapping("/update/product/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        // Here you might want to add logic to check if the provided ID matches the ID of the product object.
-        return ResponseEntity.ok(productService.saveOrUpdateProduct(product));
+        Optional<Product> existingProductOpt = productService.getProductById(id);
+        if (!existingProductOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Product  existingProduct = existingProductOpt.get();
+        existingProduct.setBookTitle(product.getBookTitle());
+        existingProduct.setBookPrice(product.getBookPrice());
+        existingProduct.setBookQuantity(product.getBookQuantity());
+        return ResponseEntity.ok(productService.saveOrUpdateProduct(existingProduct));
     }
 
     // DELETE - Delete a product by ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    @DeleteMapping("/delete/product/{id}")
+    public ResponseEntity<DeleteResponse> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        DeleteResponse deleteResponse = new DeleteResponse();
+        deleteResponse.setMessage("Book with ID: " + id + " is deleted.");
+        deleteResponse.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(deleteResponse, HttpStatus.OK);
     }
 }
 

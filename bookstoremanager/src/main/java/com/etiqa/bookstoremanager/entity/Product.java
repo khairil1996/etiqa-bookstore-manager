@@ -1,18 +1,20 @@
 package com.etiqa.bookstoremanager.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOK_SEQ_GEN")
+    @SequenceGenerator(name = "BOOK_SEQ_GEN", sequenceName = "book_seq", allocationSize = 1)
     private Long id;
+
+    @Column(name = "BOOKTITLE")
     private String bookTitle;
+    @Column(name = "BOOKPRICE")
     private Double bookPrice;
+    @Column(name = "BOOKQUANTITY")
     private Integer bookQuantity;
 
     public Long getId() {
