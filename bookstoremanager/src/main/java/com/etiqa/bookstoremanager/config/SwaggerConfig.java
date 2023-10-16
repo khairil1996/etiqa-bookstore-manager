@@ -1,26 +1,25 @@
 package com.etiqa.bookstoremanager.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "Spring Boot REST API",
-        version = "1.0.0",
-        description = "This API manages customers and products.",
-        contact = @io.swagger.v3.oas.annotations.info.Contact(name = "Khairil", url = "https://github.com/khairil1996", email = "khairilrajaie@gmail.com")))
+@EnableSwagger2
 public class SwaggerConfig {
-
     @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .components(new Components());
+    public Docket apiDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.etiqa.bookstoremanager.controller"))
+                .paths(PathSelectors.any())
+                .build();
     }
 }
+
 
 

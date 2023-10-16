@@ -23,6 +23,8 @@ public class CustomerController {
     private CustomerService customerService;
 
     // POST - Create a new customer
+    @Operation(summary = "Create a new customer", tags = {"customer"})
+    @ApiResponse(responseCode = "200", description = "Customer created successfully")
     @PostMapping("/create")
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         return ResponseEntity.ok(customerService.saveOrUpdateCustomer(customer));
@@ -37,7 +39,9 @@ public class CustomerController {
     }
 
     // GET - Get a single customer by ID
-    @GetMapping("/get/customer/by/id/{id}")
+    @Operation(summary = "Get a customer by ID", tags = {"customer"})
+    @ApiResponse(responseCode = "200", description = "Customer found")
+    @ApiResponse(responseCode = "404", description = "Customer not found")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id)
                 .map(ResponseEntity::ok)
@@ -45,6 +49,9 @@ public class CustomerController {
     }
 
     // PUT - Update a customer
+    @Operation(summary = "Update a customer by ID", tags = {"customer"})
+    @ApiResponse(responseCode = "200", description = "Customer updated successfully")
+    @ApiResponse(responseCode = "404", description = "Customer not found")
     @PutMapping("/update/customer/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         Optional<Customer> existingCustomerOpt = customerService.getCustomerById(id);
@@ -61,8 +68,9 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.saveOrUpdateCustomer(existingCustomer));
     }
 
-
     // DELETE - Delete a customer by ID
+    @Operation(summary = "Delete a customer by ID", tags = {"customer"})
+    @ApiResponse(responseCode = "200", description = "Customer deleted successfully")
     @DeleteMapping("/delete/customer/{id}")
     public ResponseEntity<DeleteResponse> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
